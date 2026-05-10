@@ -1,0 +1,33 @@
+﻿@model WebApplication6.Models.Categories
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<h2>Category Details</h2>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Description</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+
+    <dt class="col-sm-3">Color</dt>
+    <dd class="col-sm-9">
+        <span style="display:inline-block;width:30px;height:30px;border-radius:4px;background:@Model.ColorHex;border:1px solid #ccc;vertical-align:middle;"></span>
+        @Model.ColorHex
+    </dd>
+
+    <dt class="col-sm-3">Active</dt>
+    <dd class="col-sm-9">
+        <span class="badge @(Model.isActived ? "bg-success" : "bg-secondary")">
+            @(Model.isActived ? "Active" : "Inactive")
+        </span>
+    </dd>
+
+    <dt class="col-sm-3">Created At</dt>
+    <dd class="col-sm-9">@Model.Created.ToString("dd MMM yyyy HH:mm")</dd>
+</dl>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to list</a>

@@ -1,0 +1,14 @@
+﻿@model WebApplication6.Models.ErrorResponse
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h3>@Model.Status — @Model.Title</h3>
+        <hr />
+        <p><strong>Detail:</strong> @Model.Detail</p>
+        <p><strong>Path:</strong> @Model.Instance</p>
+    </div>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Go Home</a>
+</div>

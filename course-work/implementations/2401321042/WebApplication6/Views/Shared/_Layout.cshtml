@@ -1,0 +1,581 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Eventify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/WebApplication6.styles.css" asp-append-version="true" />
+    <style>
+        :root {
+            --bg: #080B10;
+            --surface: #0F1318;
+            --surface2: #161C24;
+            --border: rgba(255,255,255,0.07);
+            --accent: #E8FF47;
+            --accent2: #FF6B35;
+            --text: #F0EDE8;
+            --muted: #6B7280;
+            --danger: #FF4757;
+            --success: #2ECC71;
+            --admin: #FF4757;
+            --organizer: #3B82F6;
+            --attendee: #6B7280;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+            /* ── NOISE TEXTURE OVERLAY ── */
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+                pointer-events: none;
+                z-index: 0;
+                opacity: 0.4;
+            }
+
+        /* ── NAVBAR ── */
+        .ev-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 11, 16, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+        /* disabled input — винаги показва текста, без hover ефект */
+        .form-control:disabled,
+        .form-select:disabled,
+        .form-control[readonly] {
+            background: var(--surface2) !important;
+            color: var(--text) !important;
+            opacity: 1 !important;
+            cursor: default !important;
+            border-color: var(--border) !important;
+        }
+
+            .form-control:disabled:hover,
+            .form-select:disabled:hover,
+            .form-control[readonly]:hover {
+                background: var(--surface2) !important;
+                border-color: var(--border) !important;
+                box-shadow: none !important;
+            }
+        /* brand */
+        .ev-brand {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.02em;
+            flex-shrink: 0;
+        }
+
+        .ev-brand-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.4);
+                opacity: 0.7;
+            }
+        }
+
+        /* nav links */
+        .ev-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex: 1;
+        }
+
+        .ev-link {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+            white-space: nowrap;
+        }
+
+            .ev-link:hover {
+                color: var(--text);
+                background: var(--surface2);
+            }
+
+            .ev-link.active {
+                color: var(--accent);
+                background: rgba(232,255,71,0.08);
+            }
+
+        /* section divider in nav */
+        .ev-nav-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border);
+            margin: 0 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* role badge */
+        .ev-role {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .ev-role-admin {
+            background: rgba(255,71,87,0.15);
+            color: var(--admin);
+        }
+
+        .ev-role-organizer {
+            background: rgba(59,130,246,0.15);
+            color: var(--organizer);
+        }
+
+        .ev-role-attendee {
+            background: rgba(107,114,128,0.15);
+            color: var(--attendee);
+        }
+
+        /* user info */
+        .ev-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .ev-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        .ev-username {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* buttons */
+        .ev-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .ev-btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+            .ev-btn-ghost:hover {
+                color: var(--text);
+                border-color: rgba(255,255,255,0.2);
+                background: var(--surface2);
+            }
+
+        .ev-btn-accent {
+            background: var(--accent);
+            color: #000;
+            font-weight: 600;
+        }
+
+            .ev-btn-accent:hover {
+                background: #d4eb30;
+                transform: translateY(-1px);
+            }
+
+        .ev-btn-danger {
+            background: rgba(255,71,87,0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255,71,87,0.2);
+        }
+
+            .ev-btn-danger:hover {
+                background: rgba(255,71,87,0.2);
+            }
+
+        /* ── MAIN CONTENT ── */
+        .ev-main {
+            position: relative;
+            z-index: 1;
+            padding: 2.5rem 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            min-height: calc(100vh - 64px - 60px);
+        }
+
+        /* ── FOOTER ── */
+        .ev-footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border);
+            padding: 1.25rem 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+            .ev-footer a {
+                color: var(--muted);
+                text-decoration: none;
+            }
+
+                .ev-footer a:hover {
+                    color: var(--accent);
+                }
+
+        /* ── BOOTSTRAP OVERRIDES ── */
+        .table {
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) > * {
+            background-color: rgba(255,255,255,0.02);
+            color: var(--text);
+        }
+
+        .table-hover > tbody > tr:hover > * {
+            background-color: rgba(232,255,71,0.04);
+            color: var(--text);
+        }
+
+        .table-dark th {
+            background: var(--surface2);
+            border-color: var(--border);
+            color: var(--muted);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            border-color: var(--border) !important;
+            vertical-align: middle;
+        }
+
+        .form-control, .form-select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+        }
+
+            .form-control:focus, .form-select:focus {
+                background: var(--surface2);
+                border-color: var(--accent);
+                color: var(--text);
+                box-shadow: 0 0 0 3px rgba(232,255,71,0.1);
+            }
+
+            .form-control::placeholder {
+                color: var(--muted);
+            }
+
+            .form-select option {
+                background: var(--surface2);
+            }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+            .btn-primary:hover {
+                background: #d4eb30;
+                border-color: #d4eb30;
+                color: #000;
+            }
+
+        .btn-warning {
+            background: #F59E0B;
+            border-color: #F59E0B;
+            color: #000;
+            border-radius: 8px;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            border-radius: 8px;
+        }
+
+        .btn-secondary {
+            background: var(--surface2);
+            border-color: var(--border);
+            color: var(--text);
+            border-radius: 8px;
+        }
+
+            .btn-secondary:hover {
+                background: var(--surface);
+                color: var(--text);
+            }
+
+        .btn-info {
+            background: rgba(59,130,246,0.15);
+            border-color: rgba(59,130,246,0.3);
+            color: #60A5FA;
+            border-radius: 8px;
+        }
+
+            .btn-info:hover {
+                background: rgba(59,130,246,0.25);
+                color: #60A5FA;
+            }
+
+        .btn-outline-secondary {
+            border-color: var(--border);
+            color: var(--muted);
+            border-radius: 8px;
+        }
+
+            .btn-outline-secondary:hover {
+                background: var(--surface2);
+                color: var(--text);
+                border-color: var(--border);
+            }
+
+        .alert-success {
+            background: rgba(46,204,113,0.1);
+            border-color: rgba(46,204,113,0.2);
+            color: #2ECC71;
+            border-radius: 10px;
+        }
+
+        .alert-danger {
+            background: rgba(255,71,87,0.1);
+            border-color: rgba(255,71,87,0.2);
+            color: #FF6B7A;
+            border-radius: 10px;
+        }
+
+        .badge {
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.03em;
+        }
+
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .pagination .page-link {
+            background: var(--surface2);
+            border-color: var(--border);
+            color: var(--muted);
+            border-radius: 8px !important;
+            margin: 0 2px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .pagination .page-link:hover {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        dl.row dt {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        dl.row dd {
+            color: var(--text);
+        }
+
+        /* ── MOBILE ── */
+        @@media (max-width: 768px) {
+            .ev-nav {
+                padding: 0 1rem;
+            }
+
+            .ev-links {
+                display: none;
+            }
+
+            .ev-main {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="ev-nav">
+        <!-- Brand -->
+        <a class="ev-brand" asp-controller="Home" asp-action="Index">
+            <span class="ev-brand-dot"></span>
+            Eventify
+        </a>
+
+        <!-- Nav Links -->
+        <div class="ev-links">
+            <a class="ev-link" asp-controller="Home" asp-action="Index">Home</a>
+
+            @if (User.Identity!.IsAuthenticated)
+            {
+                <div class="ev-nav-divider"></div>
+                <a class="ev-link" asp-controller="Events" asp-action="Index">Events</a>
+                <a class="ev-link" asp-controller="Registrations" asp-action="Index">Registrations</a>
+
+                @if (User.IsInRole("Organizer") || User.IsInRole("Admin"))
+                {
+                    <div class="ev-nav-divider"></div>
+                    <a class="ev-link" asp-controller="Venues" asp-action="Index">Venues</a>
+                    <a class="ev-link" asp-controller="EventCategories" asp-action="Index">Event Categories</a>
+                }
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <div class="ev-nav-divider"></div>
+                    <a class="ev-link" asp-controller="Users" asp-action="Index">Users</a>
+                    <a class="ev-link" asp-controller="Categories" asp-action="Index">Categories</a>
+                }
+            }
+        </div>
+
+        <!-- Right side -->
+        <div class="ev-user">
+            @if (User.Identity!.IsAuthenticated)
+            {
+                <div class="ev-avatar">
+                    @User.Identity.Name?.Substring(0, 1).ToUpper()
+                </div>
+                <span class="ev-username d-none d-md-inline">@User.Identity.Name</span>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <span class="ev-role ev-role-admin">Admin</span>
+                }
+                else if (User.IsInRole("Organizer"))
+                {
+                    <span class="ev-role ev-role-organizer">Organizer</span>
+                }
+                else
+                {
+                    <span class="ev-role ev-role-attendee">Attendee</span>
+                }
+
+                <form asp-controller="Auth" asp-action="Logout" method="post" style="margin:0">
+                    <button type="submit" class="ev-btn ev-btn-danger">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a class="ev-btn ev-btn-ghost" asp-controller="Auth" asp-action="Login">Login</a>
+                <a class="ev-btn ev-btn-accent" asp-controller="Auth" asp-action="Register">Register</a>
+            }
+        </div>
+    </nav>
+
+    <div class="ev-main">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mb-4">@TempData["Success"]</div>
+        }
+        @RenderBody()
+    </div>
+
+    <footer class="ev-footer">
+        &copy; 2026 Eventify &mdash; <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Highlight active nav link
+        document.querySelectorAll('.ev-link').forEach(link => {
+            if (link.href === window.location.href ||
+                window.location.pathname.startsWith('/' + link.href.split('/').slice(3,4).join('/'))) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

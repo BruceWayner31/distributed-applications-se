@@ -1,0 +1,89 @@
+﻿@model IEnumerable<WebApplication6.Models.Registrations>
+@{
+    ViewData["Title"] = "Registrations";
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Registrations</h2>
+    <a asp-action="Create" class="btn btn-primary">+ New Registration</a>
+</div>
+
+
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            <option value="Pending" selected="@(ViewBag.Status == "Pending")">Pending</option>
+            <option value="Confirmed" selected="@(ViewBag.Status == "Confirmed")">Confirmed</option>
+            <option value="Cancelled" selected="@(ViewBag.Status == "Cancelled")">Cancelled</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="sortBy" class="form-select">
+            <option value="RegisteredAt" selected="@(ViewBag.SortBy == "RegisteredAt")">Sort: Date</option>
+            <option value="TotalPrice" selected="@(ViewBag.SortBy == "TotalPrice")">Sort: Price</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary w-100">Search</button>
+    </div>
+    <div class="col-md-2">
+        <a asp-action="Index" class="btn btn-outline-secondary w-100">Clear</a>
+    </div>
+</form>
+
+<table class="table table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>User</th>
+            <th>Event</th>
+            <th>Tickets</th>
+            <th>Total Price</th>
+            <th>Status</th>
+            <th>Registered At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var reg in Model)
+        {
+            <tr>
+                <td>@reg.Users?.Username</td>
+                <td>@reg.Events?.Title</td>
+                <td>@reg.TicketCount</td>
+                <td>$@reg.TotalPrice.ToString("F2")</td>
+                <td>
+                    <span class="badge
+                        @(reg.Status == "Confirmed" ? "bg-success" :
+                                                reg.Status == "Cancelled" ? "bg-danger" : "bg-warning text-dark")">
+                    @reg.Status
+                </span>
+            </td>
+            <td>@reg.RegisteredAt.ToString("dd MMM yyyy")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@reg.Id" class="btn btn-sm btn-info">Details</a>
+                <a asp-action="Edit" asp-route-id="@reg.Id" class="btn btn-sm btn-warning">Edit</a>
+                <a asp-action="Delete" asp-route-id="@reg.Id" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@i"
+                   asp-route-status="@ViewBag.Status"
+                   asp-route-sortBy="@ViewBag.SortBy">@i</a>
+            </li>
+        }
+    </ul>
+</nav>

@@ -1,0 +1,31 @@
+﻿@model WebApplication6.Models.Categories
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<h2>Delete Category</h2>
+<hr />
+
+<div class="alert alert-danger">
+    Are you sure you want to delete <strong>@Model.Name</strong>? This action cannot be undone.
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+
+    <dt class="col-sm-3">Color</dt>
+    <dd class="col-sm-9">
+        <span style="display:inline-block;width:24px;height:24px;border-radius:4px;background:@Model.ColorHex;border:1px solid #ccc;"></span>
+        @Model.ColorHex
+    </dd>
+
+    <dt class="col-sm-3">Active</dt>
+    <dd class="col-sm-9">@(Model.isActived ? "Yes" : "No")</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input asp-for="Id" type="hidden" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

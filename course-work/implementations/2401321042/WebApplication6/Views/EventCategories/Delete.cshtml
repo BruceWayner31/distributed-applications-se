@@ -1,0 +1,28 @@
+﻿@model WebApplication6.Models.EventCategories
+@{
+    ViewData["Title"] = "Delete Event Category";
+}
+
+<h2>Delete Event Category</h2>
+<hr />
+
+<div class="alert alert-danger">
+    Are you sure you want to remove <strong>@Model.Categories?.Name</strong> from <strong>@Model.Events?.Title</strong>?
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Event</dt>
+    <dd class="col-sm-9">@Model.Events?.Title</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@Model.Categories?.Name</dd>
+
+    <dt class="col-sm-3">Assigned At</dt>
+    <dd class="col-sm-9">@Model.AssignedAt.ToString("dd MMM yyyy")</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    <input asp-for="Id" type="hidden" />
+    <button type="submit" class="btn btn-danger">Yes, Remove</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

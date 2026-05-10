@@ -1,0 +1,26 @@
+﻿@* Details.cshtml *@
+@model WebApplication6.Models.EventCategories
+@{
+    ViewData["Title"] = "EventCategory Details";
+}
+
+<h2>Event Category Details</h2>
+<hr />
+
+<dl class="row">
+    <dt class="col-sm-3">Event</dt>
+    <dd class="col-sm-9">@Model.Events?.Title</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">
+        <span class="badge" style="background-color:@Model.Categories?.ColorHex">
+            @Model.Categories?.Name
+        </span>
+    </dd>
+
+    <dt class="col-sm-3">Assigned At</dt>
+    <dd class="col-sm-9">@Model.AssignedAt.ToString("dd MMM yyyy HH:mm")</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to list</a>
